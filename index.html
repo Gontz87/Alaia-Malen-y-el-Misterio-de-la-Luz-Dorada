@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuento Interactivo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @font-face {
+      font-family: 'MagicFairy';
+      src: url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&display=swap');
+    }
+    body {
+      font-family: 'MagicFairy', sans-serif;
+      background-color: #fdf6e4;
+    }
+    .page {
+      transition: transform 0.8s ease-in-out;
+    }
+    .page.hidden {
+      transform: translateX(100%);
+    }
+    .fade {
+      animation: fadeIn 1s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    img {
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body class="overflow-hidden flex flex-col items-center justify-center min-h-screen">
+
+  <div class="w-full max-w-3xl bg-white shadow-lg rounded-lg p-6 relative">
+    <div id="pages" class="relative h-[600px] overflow-hidden">
+      <!-- Páginas se generarán dinámicamente -->
+    </div>
+    <div class="flex justify-between mt-4">
+      <button id="prevButton" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50">
+        Anterior
+      </button>
+      <button id="nextButton" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50">
+        Siguiente
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Contenido del cuento
+    const story = [
+      {
+        text: "En un pequeño pueblo llamado Sol Brillante, donde siempre hacía sol y las montañas parecían pintar el horizonte, vivían dos hermanas muy especiales: Alaia, de tres años, y Malen, una bebé de nueve meses. Alaia era curiosa y valiente, siempre con su sombrero de vaquero y su perro Chispa corriendo a su lado. Malen, con su risa contagiosa, hacía que todos se sintieran felices a su alrededor. Una mañana, el sheriff del pueblo llegó corriendo a la plaza central. Su sombrero estaba torcido y su cara mostraba preocupación. “¡La luz dorada del bosque ha desaparecido!”, anunció. Los habitantes del pueblo murmuraron con miedo. Pero Alaia levantó la mano y dijo con voz firme: “¡Yo la encontraré!”.",
+        image: "1.jpeg"
+      },
+      {
+        text: "Alaia se preparó para la gran aventura. Su mamá le dio una linterna brillante y un collar especial que siempre llevaba para la suerte. “Ten cuidado, mi pequeña exploradora”, dijo su mamá con una sonrisa. Alaia colocó a Malen en una mochila porta bebés y juntas salieron hacia el bosque. Chispa corría delante de ellas, moviendo la cola emocionado. “No tengas miedo, hermanita. ¡Somos un equipo valiente!”, dijo Alaia con una sonrisa mientras Malen soltaba una risa encantadora.",
+        image: "2.jpeg"
+      },
+      {
+        text: "El bosque estaba más oscuro de lo que Alaia esperaba. Las hojas crujían bajo sus pies, y los árboles altos parecían susurrar secretos. Pero Alaia no se dejó intimidar. Encendió la linterna y comenzó a cantar una canción para no tener miedo. Chispa, por su parte, comenzó a olfatear algo en el suelo. Alaia se acercó y vio un pequeño charco que reflejaba un brillo dorado. “¡Mira, Malen! Esto es una pista”, dijo emocionada. Junto al charco, había unas huellas diminutas.",
+        image: "3.jpeg"
+      },
+      {
+        text: "Siguiendo las huellas, llegaron a un árbol gigantesco en medio del bosque. En sus ramas, había una bandada de cuervos, y en lo más alto, un nido brillante que parecía iluminar todo alrededor. “¡Ahí está!”, exclamó Alaia señalando el nido. Pero los cuervos no estaban dispuestos a devolverla. Alaia levantó el collar que le había dado su mamá. “Si nos devuelven la luz dorada, les daré este collar brillante para su nido”, dijo con voz dulce. Finalmente, los cuervos aceptaron el intercambio.",
+        image: "4.jpeg"
+      },
+      {
+        text: "Con la luz dorada en sus manos, Alaia se sintió como la exploradora más valiente. Guardó la esfera dorada en una cajita y comenzó a caminar hacia el pueblo. El bosque, iluminado por la luz, ya no parecía tan aterrador. Cuando llegaron al pueblo, las estrellas ya iluminaban el cielo, y la gente salió a recibirlas con aplausos.",
+        image: "5.jpeg"
+      },
+      {
+        text: "El sheriff declaró a Alaia, Malen y Chispa como heroínas del pueblo. Alaia aprendió algo importante: con valentía y amor, siempre se puede encontrar la luz, incluso en la oscuridad. Esa noche, mientras las estrellas brillaban en el cielo, Alaia abrazó a Malen y susurró: “Siempre seremos un equipo valiente”.",
+        image: "6.jpeg"
+      }
+    ];
+
+    // Estado inicial
+    let currentPage = 0;
+
+    // Elementos del DOM
+    const pagesContainer = document.getElementById("pages");
+    const prevButton = document.getElementById("prevButton");
+    const nextButton = document.getElementById("nextButton");
+
+    // Cargar páginas dinámicamente
+    function loadPages() {
+      story.forEach((page, index) => {
+        const pageElement = document.createElement("div");
+        pageElement.classList.add(
+          "page",
+          "absolute",
+          "inset-0",
+          "flex",
+          "flex-col",
+          "items-center",
+          "justify-start",
+          "p-6",
+          "hidden"
+        );
+        if (index === 0) pageElement.classList.remove("hidden");
+
+        pageElement.innerHTML = `
+          <img src="${page.image}" alt="Imagen del cuento" class="w-full h-2/4 object-contain rounded-lg shadow-lg">
+          <p class="mt-4 text-lg text-center text-gray-700">${page.text}</p>
+        `;
+        pagesContainer.appendChild(pageElement);
+      });
+    }
+
+    // Mostrar la página actual
+    function showPage(index) {
+      const pages = document.querySelectorAll(".page");
+      pages.forEach((page, idx) => {
+        if (idx === index) {
+          page.classList.remove("hidden");
+          page.classList.add("fade");
+        } else {
+          page.classList.add("hidden");
+        }
+      });
+
+      // Actualizar botones
+      prevButton.disabled = index === 0;
+      nextButton.disabled = index === story.length - 1;
+    }
+
+    // Eventos de navegación
+    prevButton.addEventListener("click", () => {
+      if (currentPage > 0) {
+        currentPage--;
+        showPage(currentPage);
+      }
+    });
+
+    nextButton.addEventListener("click", () => {
+      if (currentPage < story.length - 1) {
+        currentPage++;
+        showPage(currentPage);
+      }
+    });
+
+    // Inicializar
+    loadPages();
+    showPage(currentPage);
+  </script>
+</body>
+</html>
